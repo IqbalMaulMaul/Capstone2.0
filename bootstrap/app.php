@@ -24,7 +24,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
+// Jika storage tidak bisa ditulis (contoh: di Vercel), redirect ke /tmp
+$defaultStoragePath = dirname(__DIR__) . '/storage';
+if (getenv('VERCEL') || !is_writable($defaultStoragePath)) {
     $storagePath = '/tmp/storage';
     $app->useStoragePath($storagePath);
     foreach ([
