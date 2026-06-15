@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../**/*.vue";
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Warm, Soft, Earthy Palette (Anti-Harsh White) */
+    --color-white: #FCFAF5; /* Softer, warmer cream white for cards */
+    --color-black: #2C2621;
+    
+    --color-primary: #C65D3B; /* Terracotta glow */
+    --color-primary-light: #E07A5F;
+    --color-primary-dark: #6B3E2E;
+    --color-accent: #F2CC8F;
+    --color-accent-light: #F4D39E;
+    --color-accent-dark: #D4A373;
+    
+    --color-surface: #FCFAF5;
+    --color-surface-alt: #F5EFE6; /* Muted warm background */
+    --color-surface-muted: #EBE4D8; /* For inputs and inactive states */
+    --color-border: #D8CCBE;
+    --color-border-light: #EBE4D8;
+    
+    --color-text-primary: #4A3F35; /* Dark espresso instead of harsh black */
+    --color-text-secondary: #8A7E73;
+    --color-text-muted: #A89F93;
+
+    /* Semantic colors with softer tones */
+    --color-success: #6A8D73;
+    --color-success-light: #E3EDE5;
+    --color-warning: #D98E54;
+    --color-warning-light: #FAEDE3;
+    --color-info: #6E949F;
+    --color-info-light: #E5EFF2;
+    --color-danger: #B85B56;
+    --color-danger-light: #F5E6E5;
+}
+
+@layer base {
+    body {
+        @apply bg-surface-alt text-text-primary antialiased font-sans;
+    }
+}
+
+@layer utilities {
+    /* Hide scrollbar utility */
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    /* Safe area padding for newer iPhones */
+    .pb-safe {
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem);
+    }
+}

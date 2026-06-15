@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Guest\MenuController;
+use App\Http\Controllers\Guest\CartController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Guest Routes (QR Code Entry)
+Route::prefix('room/{token}')->middleware(['web', 'room.auth'])->name('guest.')->group(function () {
+    // Menu
+    Route::get('/', [MenuController::class, 'index'])->name('menu.index');
+    Route::get('/menu/{slug}', [MenuController::class, 'show'])->name('menu.show');
+    
+    // Cart
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    
+    // Checkout & Payment
+    Route::get('/checkout', [\App\Http\Controllers\Guest\CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [\App\Http\Controllers\Guest\CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/payment/{order}', [\App\Http\Controllers\Guest\PaymentController::class, 'index'])->name('payment');
+    Route::post('/payment/{order}', [\App\Http\Controllers\Guest\PaymentController::class, 'store'])->name('payment.store');
+    
+    // Tracking & History
+    Route::get('/tracking/{order}', [\App\Http\Controllers\Guest\OrderTrackingController::class, 'show'])->name('tracking');
+    Route::get('/history', [\App\Http\Controllers\Guest\OrderTrackingController::class, 'index'])->name('history');
+});
