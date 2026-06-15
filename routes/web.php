@@ -51,6 +51,11 @@ Route::prefix('room/{token}')->middleware(['web', 'room.auth'])->name('guest.')-
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     
+    // Redirect /admin to login or dashboard
+    Route::get('/', function () {
+        return redirect()->route('admin.login');
+    });
+    
     // Guest Admin Routes
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

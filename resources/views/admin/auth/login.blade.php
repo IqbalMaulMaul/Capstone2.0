@@ -22,6 +22,15 @@
             </p>
         </div>
         
+        <!-- PWA Install Button (Hidden by default, shown by JS if available) -->
+        <div id="pwa-install-container" class="hidden mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+            <p class="text-xs text-yellow-800 mb-2 font-medium">Buka aplikasi lebih cepat tanpa browser!</p>
+            <button id="pwa-install-btn" type="button" class="w-full flex justify-center items-center gap-2 rounded-md bg-[#c9a84c] px-4 py-2 text-sm font-bold text-white hover:bg-[#b09038] transition-colors shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Install Aplikasi ke HP
+            </button>
+        </div>
+        
         <form class="mt-8 space-y-6" action="{{ route('admin.login.submit') }}" method="POST">
             @csrf
             
@@ -65,19 +74,50 @@
         </div>
     </div>
     
-    <!-- PWA Service Worker -->
+    <!-- PWA Service Worker & Install Logic -->
     <script>
+        // 1. Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+                    .then(registration => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
             });
         }
+
+        // 2. Handle PWA Install Prompt
+        let deferredPrompt;
+        const installContainer = document.getElementById('pwa-install-container');
+        const installBtn = document.getElementById('pwa-install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI to notify the user they can add to home screen
+            installContainer.classList.remove('hidden');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                    installContainer.classList.add('hidden'); // Hide button after install
+                }
+                deferredPrompt = null;
+            }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            // Hide the app-provided install promotion
+            installContainer.classList.add('hidden');
+            console.log('PWA was installed');
+        });
     </script>
 </body>
 </html>
