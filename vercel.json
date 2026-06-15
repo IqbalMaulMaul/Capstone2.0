@@ -2,6 +2,14 @@
     "version": 2,
     "builds": [
         {
+            "src": "public/build/**",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "public/storage/**",
+            "use": "@vercel/static"
+        },
+        {
             "src": "api/index.php",
             "use": "vercel-php@0.9.0"
         }
