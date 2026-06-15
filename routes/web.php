@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\FinanceController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('admin.login');
 });
 
 // Shortcut for Testing Guest View without needing to scan QR
