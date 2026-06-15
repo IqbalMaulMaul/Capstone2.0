@@ -24,9 +24,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-// Jika storage tidak bisa ditulis (contoh: di Vercel), redirect ke /tmp
+// Jika di Vercel (filesystem read-only), redirect storage & bootstrap cache ke /tmp
 $defaultStoragePath = dirname(__DIR__) . '/storage';
 if (getenv('VERCEL') || !is_writable($defaultStoragePath)) {
+    // Storage path
     $storagePath = '/tmp/storage';
     $app->useStoragePath($storagePath);
     foreach ([
@@ -41,6 +42,13 @@ if (getenv('VERCEL') || !is_writable($defaultStoragePath)) {
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
         }
+    }
+
+    // Bootstrap cache path (services.php, packages.php)
+    // Must be writable so package discovery can succeed
+    $app->useBootstrapPath('/tmp/bootstrap-cache');
+    if (!is_dir('/tmp/bootstrap-cache/cache')) {
+        mkdir('/tmp/bootstrap-cache/cache', 0755, true);
     }
 }
 

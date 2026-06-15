@@ -7,6 +7,7 @@ $tmpDirs = [
     '/tmp/storage/framework/sessions',
     '/tmp/storage/logs',
     '/tmp/storage/app/public',
+    '/tmp/bootstrap-cache/cache', // Untuk services.php & packages.php
 ];
 foreach ($tmpDirs as $dir) {
     if (!is_dir($dir)) {
