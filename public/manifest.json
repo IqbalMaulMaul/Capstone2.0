@@ -1,16 +1,17 @@
 {
-    "name": "Laravel PWA",
-    "short_name": "LPT",
-    "start_url": "/",
-    "background_color": "#000000",
-    "description": "A Progressive Web Application setup for Laravel projects.",
-    "display": "fullscreen",
-    "theme_color": "#000000",
+    "name": "Hotel Admin Dashboard",
+    "short_name": "Hotel Admin",
+    "start_url": "/admin/login",
+    "background_color": "#f9fafb",
+    "description": "Sistem Manajemen Pemesanan Kamar dan Dapur Hotel",
+    "display": "standalone",
+    "theme_color": "#1a1a2e",
     "icons": [
         {
             "src": "logo.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }
