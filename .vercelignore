@@ -8,3 +8,4 @@
 /.git
 /tests
 /phpunit.xml
+/mysql-8
