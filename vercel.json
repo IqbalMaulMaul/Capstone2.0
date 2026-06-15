@@ -30,7 +30,8 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
+        "APP_URL": "https://capstone2-0-eight.vercel.app",
         "VERCEL": "1",
         "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
         "APP_PACKAGES_CACHE": "/tmp/bootstrap-cache/cache/packages.php",
