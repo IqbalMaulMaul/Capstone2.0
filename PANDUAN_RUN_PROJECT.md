@@ -1,92 +1,109 @@
-# Panduan Menjalankan Project (CapStone 2.0)
+# Panduan Lengkap & Mudah Menjalankan Project (CapStone 2.0)
 
-⚠️ **PENTING: Gunakan Terminal Laragon**  
-Agar semua perintah (`php`, `npm`, dsb) bisa dikenali dengan baik, sangat disarankan untuk **membuka Terminal langsung dari aplikasi Laragon** (klik tombol **Terminal** di aplikasi Laragon), bukan menggunakan terminal bawaan Windows atau VSCode biasa.
-
-Pastikan database (MySQL) di Laragon sudah dalam keadaan **Start/Running**!
-
-Langkah pertama sebelum menjalankan server, pastikan database sudah terbuat:
-```bash
-cd c:\laragonn\www\CapStone2.0
-
-# Jalankan perintah ini (hanya jika database/tabel belum ada):
-php artisan migrate
-# Jika ditanya "Database does not exist. Would you like to create it?", ketik: yes
-```
+Panduan ini ditujukan untuk seluruh anggota kelompok agar bisa menjalankan project (baik *Backend/Web* maupun *Mobile*) di laptop masing-masing dengan mudah.
 
 ---
 
-Setelah database siap, Anda perlu membuka beberapa tab terminal **(dari dalam terminal Laragon tersebut)** secara bersamaan:
+## 💻 TAHAP 1: Menyiapkan Database (Hanya Sekali)
+1. Buka aplikasi **Laragon** atau **XAMPP** di laptop kalian.
+2. Nyalakan layanan **MySQL** (dan **Apache/Nginx**).
+3. Buka pengelola database (seperti phpMyAdmin atau HeidiSQL).
+4. Buat database kosong baru, misalnya dengan nama: `capstone2.0` *(atau sesuaikan dengan kesepakatan kelompok)*.
 
 ---
 
-## 🖥️ Terminal 1: Menjalankan Server Vite (Wajib)
-Terminal ini bertugas untuk meng-compile CSS (Tailwind) dan JavaScript secara *real-time*.
-```bash
-npm run dev
-```
-*(Biarkan terminal ini tetap terbuka dan berjalan)*
+## ⚙️ TAHAP 2: Setup Awal Backend (Laravel API)
+Backend ini berfungsi sebagai pusat data dan panel admin web.
+Buka **Terminal** (sangat disarankan memakai fitur *Terminal* bawaan dari aplikasi Laragon) dan pastikan kalian berada di dalam folder project (contoh: `C:\laragon\www\Capstone2.0`).
+
+**Langkah ini hanya dilakukan saat pertama kali mendownload project:**
+1. Instal semua keperluan backend:
+   ```bash
+   composer install
+   npm install
+   ```
+2. Cari file bernama `.env.example`, copy dan ubah nama file copy-annya menjadi `.env`.
+3. Buka file `.env`, lalu edit bagian database agar sesuai dengan yang kalian buat di Tahap 1:
+   ```env
+   DB_DATABASE=capstone2.0
+   ```
+4. Jalankan perintah berikut secara berurutan:
+   ```bash
+   php artisan key:generate
+   php artisan migrate
+   ```
+   *(Jika ditanya "Database does not exist. Would you like to create it?", ketik: `yes`)*
 
 ---
 
-## 📡 Terminal 2: Menjalankan WebSocket Reverb (Wajib untuk Real-time)
-Terminal ini menjalankan server WebSocket agar fitur *real-time* (seperti update status pesanan langsung di layar Kitchen tanpa di-refresh) bisa berfungsi.
-```bash
-php artisan reverb:start
-```
-*(Biarkan terminal ini tetap terbuka dan berjalan)*
+## 🚀 TAHAP 3: Menjalankan Server & Fitur Web (Rutinitas Harian)
+Setiap kali kalian ingin mulai *ngoding* atau testing, kalian wajib membuka **4 tab terminal terpisah** di dalam folder backend Laravel. Biarkan keempatnya menyala terus:
+
+- **Terminal 1 (Server PHP / API):**
+  ```bash
+  php artisan serve
+  ```
+  *(Jika kalian memakai Virtual Host Laragon seperti `http://capstone2.0.test`, langkah ini bisa dilewati).*
+
+- **Terminal 2 (Server Vite untuk Tampilan Web):**
+  ```bash
+  npm run dev
+  ```
+
+- **Terminal 3 (Server WebSocket untuk Fitur Real-Time):**
+  ```bash
+  php artisan reverb:start
+  ```
+  *(Wajib menyala agar pesanan masuk langsung muncul di layar dapur tanpa refresh).*
+
+- **Terminal 4 (Queue Worker untuk Tugas Latar Belakang):**
+  ```bash
+  php artisan queue:work
+  ```
+  *(Wajib menyala agar notifikasi dan proses antrean berjalan lancar).*
 
 ---
 
-## ⚙️ Terminal 3: Menjalankan Queue Worker (Wajib)
-Karena aplikasi kita menggunakan `QUEUE_CONNECTION=database`, semua *broadcast event* atau tugas di latar belakang (seperti mengirim notifikasi) dikerjakan oleh Queue Worker.
-```bash
-php artisan queue:work
-```
-*(Biarkan terminal ini tetap terbuka dan berjalan)*
+## 📱 TAHAP 4: Menjalankan Aplikasi Mobile (Flutter)
+Ini adalah aplikasi yang nantinya akan dipakai oleh kasir atau pelanggan.
+1. Buka **Terminal Baru**.
+2. Masuk ke folder aplikasi mobile:
+   ```bash
+   cd capstone_mobile
+   ```
+3. Instal keperluan Flutter (hanya sekali di awal):
+   ```bash
+   flutter pub get
+   ```
+4. Siapkan Emulator Android (dari Android Studio) atau sambungkan HP kalian pakai kabel USB.
+5. Jalankan aplikasinya:
+   ```bash
+   flutter run
+   ```
 
 ---
 
-## 🌐 Terminal 4: Menjalankan PHP Server (Opsional jika pakai Laragon)
-Jika Anda menggunakan fitur *virtual host* dari Laragon (misalnya mengakses web melalui `http://capstone2.0.test`), Anda **tidak perlu** menjalankan terminal ini. 
+## 🔗 Link & Akun untuk Testing (Web Admin)
 
-Namun, jika Laragon sedang bermasalah atau Anda ingin mengakses via localhost biasa, jalankan:
-```bash
-php artisan serve
-```
-*(Maka web bisa diakses di `http://127.0.0.1:8000`)*
+Jika kalian menjalankan `php artisan serve`, maka URL webnya adalah `http://127.0.0.1:8000`. Jika memakai Laragon, sesuaikan dengan nama hostnya (misal `http://capstone2.0.test`).
 
----
-
-### Ringkasan Singkat (Cheat Sheet):
-1. `npm run dev`
-2. `php artisan reverb:start`
-3. `php artisan queue:work`
-*(Buka 3 terminal baru di VS Code, paste masing-masing perintah di atas, dan biarkan menyala).*
-
----
-
-## 🔗 Link untuk Testing
-
-Gunakan URL berikut (sesuaikan domain jika Anda menggunakan Virtual Host Laragon, misal `http://capstone2.0.test`):
-
-### 1. Customer / Guest Access (Tanpa QR Code)
-Gunakan shortcut berikut untuk masuk sebagai Guest tanpa harus melakukan scan QR Code:
+### 1. Akses Customer (Tanpa perlu Scan QR Code)
+Gunakan link rahasia ini untuk langsung mencoba memesan sebagai tamu:
 - **URL**: `http://127.0.0.1:8000/test-guest`
 
-### 2. Admin Panel
+### 2. Login Admin Panel (Web)
 - **URL Login**: `http://127.0.0.1:8000/admin/login`
 
-Gunakan kredensial (akun) berikut untuk login dengan role yang berbeda:
+Gunakan salah satu akun berikut sesuai fitur yang ingin kalian test:
 
 **Role Owner (Akses Penuh):**
 - **Email**: `owner@hotel.com`
 - **Password**: `password`
 
-**Role Kitchen (Akses Layar Dapur):**
+**Role Kitchen (Akses Layar Dapur Saja):**
 - **Email**: `kitchen@hotel.com`
 - **Password**: `password`
 
-**Role Finance (Akses Laporan Keuangan):**
+**Role Finance (Akses Laporan Keuangan Saja):**
 - **Email**: `finance@hotel.com`
 - **Password**: `password`
