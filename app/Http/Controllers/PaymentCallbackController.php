@@ -117,8 +117,21 @@ class PaymentCallbackController extends Controller
             // Broadcast OrderStatusUpdated to Guest
             \App\Events\OrderStatusUpdated::dispatch($order);
 
-            // TODO: Broadcast NewOrderEvent to Kitchen once it is built
-            // \App\Events\NewOrderEvent::dispatch($order);
+            // Push notification to Kitchen & Owner
+            try {
+                $order->load('room');
+                $roomNumber = $order->room->room_number ?? '-';
+
+                \App\Services\PushNotificationService::sendToRoles(
+                    ['kitchen', 'owner'],
+                    '🍽️ Pesanan Baru!',
+                    "Order #{$order->order_number} dari Kamar {$roomNumber} — {$order->formatted_total}",
+                    ['type' => 'new_order', 'order_id' => $order->id]
+                );
+            } catch (\Exception $e) {
+                // Silence push notification errors — don't break the payment flow
+                \Illuminate\Support\Facades\Log::error('Push notification error: ' . $e->getMessage());
+            }
         }
     }
 }

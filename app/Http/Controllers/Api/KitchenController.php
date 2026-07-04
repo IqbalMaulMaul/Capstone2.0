@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Menu;
 use App\Models\Category;
 use App\Events\OrderStatusUpdated;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 
 class KitchenController extends Controller
@@ -80,6 +81,20 @@ class KitchenController extends Controller
             OrderStatusUpdated::dispatch($order);
         } catch (\Exception $e) {
             // Silence broadcast error if Pusher/Reverb not running
+        }
+
+        // Push notification to owner
+        try {
+            $order->load('room');
+            $roomNumber = $order->room->room_number ?? '-';
+            PushNotificationService::sendToRole(
+                'owner',
+                'Status Pesanan Diperbarui',
+                "Order #{$order->order_number} (Kamar {$roomNumber}): {$order->status_label}",
+                ['type' => 'order_status', 'order_id' => $order->id]
+            );
+        } catch (\Exception $e) {
+            // Silence push notification errors
         }
 
         return response()->json([
