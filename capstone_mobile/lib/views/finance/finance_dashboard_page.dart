@@ -69,7 +69,7 @@ class _FinanceDashboardPageState extends State<FinanceDashboardPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -317,7 +317,7 @@ class _FinanceDashboardPageState extends State<FinanceDashboardPage> {
                         final payment = _recentPayments[index];
 
                         return Container(
-                          margin: const EdgeInsets.bottom(10),
+                          margin: const EdgeInsets.only(bottom: 10),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.white,

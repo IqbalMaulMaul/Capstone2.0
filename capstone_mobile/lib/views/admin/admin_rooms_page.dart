@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_mobile/services/api_service.dart';
+import 'package:capstone_mobile/views/admin/add_room_page.dart';
+import 'package:capstone_mobile/views/admin/edit_room_page.dart';
 
 class AdminRoomsPage extends StatefulWidget {
   const AdminRoomsPage({super.key});
@@ -36,6 +38,47 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
     }
   }
 
+  Future<void> _deleteRoom(int id) async {
+    try {
+      await ApiService.deleteRoom(id);
+      _loadRooms();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Kamar berhasil dihapus!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menghapus kamar: $e')),
+        );
+      }
+    }
+  }
+
+  void _confirmDelete(Map<String, dynamic> room) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Hapus Kamar'),
+        content: Text('Yakin ingin menghapus Kamar ${room['room_number']}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteRoom(room['id']);
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,14 +109,14 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                         final isActive = room['is_active'] == true || room['is_active'] == 1 || room['is_active'] == '1';
 
                         return Container(
-                          margin: const EdgeInsets.bottom(12),
+                          margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withValues(alpha: 0.02),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -119,49 +162,66 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                                   ),
                                 ],
                               ),
-                              // QR Code Link icon / indicator
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                              // Edit, Delete, QR Code
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.qr_code_2_rounded, color: Colors.indigoAccent, size: 36),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (_) => AlertDialog(
-                                          title: Text('Token Kamar ${room['room_number']}'),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              const Text('Token QR:'),
-                                              const SizedBox(height: 4),
-                                              SelectableText(
-                                                room['qr_token'] ?? '',
-                                                style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace'),
-                                              ),
-                                              const SizedBox(height: 12),
-                                              const Text('URL Masuk:'),
-                                              const SizedBox(height: 4),
-                                              SelectableText(
-                                                room['qr_url'] ?? '',
-                                                style: const TextStyle(fontSize: 12, color: Colors.blue),
-                                              ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              child: const Text('Tutup'),
-                                            ),
-                                          ],
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditRoomPage(room: room),
                                         ),
                                       );
+                                      if (result == true) _loadRooms();
                                     },
                                   ),
-                                  Text(
-                                    'Lihat Detail',
-                                    style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () => _confirmDelete(room),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.qr_code_2_rounded, color: Colors.indigoAccent, size: 32),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title: Text('Token Kamar ${room['room_number']}'),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text('Token QR:'),
+                                                  const SizedBox(height: 4),
+                                                  SelectableText(
+                                                    room['qr_token'] ?? '',
+                                                    style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  const Text('URL Masuk:'),
+                                                  const SizedBox(height: 4),
+                                                  SelectableText(
+                                                    room['qr_url'] ?? '',
+                                                    style: const TextStyle(fontSize: 12, color: Colors.blue),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context),
+                                                  child: const Text('Tutup'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -171,6 +231,16 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                       },
                     ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddRoomPage()),
+          );
+          if (result == true) _loadRooms();
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

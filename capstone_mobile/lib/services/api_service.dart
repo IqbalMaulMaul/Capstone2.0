@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -125,7 +126,7 @@ class ApiService {
     throw Exception('Gagal memuat kategori');
   }
 
-  static Future<List<dynamic>> getMenus() async {
+ static Future<List<dynamic>> getMenus() async {
     final url = await getBaseUrl();
     final response = await http.get(
       Uri.parse('$url/admin/menus'),
@@ -137,6 +138,105 @@ class ApiService {
     throw Exception('Gagal memuat daftar menu');
   }
 
+static Future<void> updateMenu({
+  required int id,
+  required String name,
+  required int categoryId,
+  required String description,
+  required int price,
+  File? image,
+}) async {
+  final url = await getBaseUrl();
+  final token = await getToken();
+
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('$url/admin/menus/$id'),
+  );
+
+  request.headers.addAll({
+    'Accept': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  });
+
+  request.fields['name'] = name;
+  request.fields['category_id'] = categoryId.toString();
+  request.fields['description'] = description;
+  request.fields['price'] = price.toString();
+
+  if (image != null) {
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+      ),
+    );
+  }
+
+  final response = await request.send();
+
+  if (response.statusCode != 200) {
+    final body = await response.stream.bytesToString();
+    throw Exception(body);
+  }
+}
+
+static Future<void> addMenu({
+  required String name,
+  required int categoryId,
+  required String description,
+  required int price,
+  File? image,
+}) async {
+  final url = await getBaseUrl();
+  final token = await getToken();
+
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('$url/admin/menus'),
+  );
+
+  request.headers.addAll({
+    'Accept': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  });
+
+  request.fields['name'] = name;
+  request.fields['category_id'] = categoryId.toString();
+  request.fields['description'] = description;
+  request.fields['price'] = price.toString();
+
+  if (image != null) {
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+      ),
+    );
+  }
+
+  final response = await request.send();
+
+  if (response.statusCode != 200 &&
+      response.statusCode != 201) {
+    final body = await response.stream.bytesToString();
+    throw Exception(body);
+  }
+}
+
+static Future<void> deleteMenu(int id) async {
+  final url = await getBaseUrl();
+
+  final response = await http.delete(
+    Uri.parse('$url/admin/menus/$id'),
+    headers: await _headers(),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception("Gagal menghapus menu");
+  }
+}
+
   static Future<List<dynamic>> getRooms() async {
     final url = await getBaseUrl();
     final response = await http.get(
@@ -147,6 +247,58 @@ class ApiService {
       return jsonDecode(response.body)['data'];
     }
     throw Exception('Gagal memuat daftar kamar');
+  }
+
+  static Future<void> addRoom({
+    required String roomNumber,
+    required int floor,
+    bool isActive = true,
+  }) async {
+    final url = await getBaseUrl();
+    final response = await http.post(
+      Uri.parse('$url/admin/rooms'),
+      headers: await _headers(),
+      body: jsonEncode({
+        'room_number': roomNumber,
+        'floor': floor,
+        'is_active': isActive,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(response.body);
+    }
+  }
+
+  static Future<void> updateRoom({
+    required int id,
+    required String roomNumber,
+    required int floor,
+    required bool isActive,
+  }) async {
+    final url = await getBaseUrl();
+    final response = await http.put(
+      Uri.parse('$url/admin/rooms/$id'),
+      headers: await _headers(),
+      body: jsonEncode({
+        'room_number': roomNumber,
+        'floor': floor,
+        'is_active': isActive,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
+  }
+
+  static Future<void> deleteRoom(int id) async {
+    final url = await getBaseUrl();
+    final response = await http.delete(
+      Uri.parse('$url/admin/rooms/$id'),
+      headers: await _headers(),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Gagal menghapus kamar');
+    }
   }
 
   // ─── Kitchen APIs ─────────────────────────────────────

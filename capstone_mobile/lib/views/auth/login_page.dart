@@ -105,9 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
                   ),
                   child: const Icon(
                     Icons.restaurant_menu_rounded,
@@ -130,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                   'Kelola pesanan, dapur, dan keuangan Anda.',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.slate.shade400,
+                    color: Colors.blueGrey.shade400,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -140,9 +140,9 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.06),
+                    color: Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: const TextStyle(color: Colors.white30),
                           prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.05),
+                          fillColor: Colors.white.withValues(alpha: 0.05),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.05),
+                          fillColor: Colors.white.withValues(alpha: 0.05),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -210,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.indigoAccent,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: Colors.indigoAccent.withOpacity(0.5),
+                          disabledBackgroundColor: Colors.indigoAccent.withValues(alpha: 0.5),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -237,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Dev Settings Toggle
                 TextButton(
                   onPressed: () => setState(() => _showDevSettings = !_showDevSettings),
-                  style: TextButton.styleFrom(foregroundColor: Colors.slate.shade400),
+                  style: TextButton.styleFrom(foregroundColor: Colors.blueGrey.shade400),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -272,7 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                             hintText: 'http://10.0.2.2:8000/api',
                             hintStyle: const TextStyle(color: Colors.white30),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.05),
+                            fillColor: Colors.white.withValues(alpha: 0.05),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,

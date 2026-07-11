@@ -174,7 +174,7 @@ class _KitchenDashboardPageState extends State<KitchenDashboardPage> {
         }
 
         return Container(
-          margin: const EdgeInsets.bottom(16),
+          margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -182,7 +182,7 @@ class _KitchenDashboardPageState extends State<KitchenDashboardPage> {
             border: Border.all(color: Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -367,7 +367,7 @@ class _KitchenDashboardPageState extends State<KitchenDashboardPage> {
                         ),
                         Switch(
                           value: isAvailable,
-                          activeColor: Colors.green,
+                          activeThumbColor: Colors.green,
                           onChanged: (_) => _toggleMenuAvailability(menu['id'], catIdx, menuIdx),
                         ),
                       ],

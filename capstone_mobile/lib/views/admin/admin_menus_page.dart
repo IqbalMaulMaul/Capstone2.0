@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_mobile/services/api_service.dart';
+import 'package:capstone_mobile/views/admin/add_menu_page.dart';
+import 'package:capstone_mobile/views/admin/edit_menu_page.dart';
 
 class AdminMenusPage extends StatefulWidget {
   const AdminMenusPage({super.key});
@@ -66,11 +68,11 @@ class _AdminMenusPageState extends State<AdminMenusPage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadMenus,
-          ),
-        ],
+        IconButton(
+        icon: const Icon(Icons.refresh),
+        onPressed: _loadMenus,
+        ),
+ ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -86,13 +88,13 @@ class _AdminMenusPageState extends State<AdminMenusPage> {
                         final isAvailable = menu['is_available'] == true || menu['is_available'] == 1;
 
                         return Container(
-                          margin: const EdgeInsets.bottom(12),
+                          margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withValues(alpha:0.02),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -141,15 +143,34 @@ class _AdminMenusPageState extends State<AdminMenusPage> {
                                     ),
                                   ),
                                 ),
-                                // Switch for availability toggle
+                                // Edit, Delete, and Switch for availability toggle
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, color: Colors.blue),
+                                        onPressed: () async {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => EditMenuPage(menu: menu),
+                                            ),
+                                          );
+                                          if (result == true) _loadMenus();
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete, color: Colors.red),
+                                        onPressed: () async {
+                                          await ApiService.deleteMenu(menu['id']);
+                                          _loadMenus();
+                                        },
+                                      ),
                                       Switch(
                                         value: isAvailable,
-                                        activeColor: Colors.green,
+                                        activeThumbColor: Colors.green,
                                         onChanged: (_) => _toggleAvailability(menu['id'], index),
                                       ),
                                       Text(
@@ -170,6 +191,16 @@ class _AdminMenusPageState extends State<AdminMenusPage> {
                       },
                     ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddMenuPage()),
+          );
+          if (result == true) _loadMenus();
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
