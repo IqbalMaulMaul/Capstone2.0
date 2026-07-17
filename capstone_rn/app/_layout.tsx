@@ -37,7 +37,7 @@ export default function RootLayout() {
       router.replace('/(auth)/login');
     } else if (isLoggedIn && inAuthGroup) {
       // Redirect based on role
-      if (user?.role === 'owner') {
+      if (user?.role === 'owner' || user?.role === 'admin') {
         router.replace('/(admin)');
       } else if (user?.role === 'kitchen') {
         router.replace('/(kitchen)');
@@ -51,14 +51,14 @@ export default function RootLayout() {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={Colors.primary} />
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,

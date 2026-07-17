@@ -1,60 +1,60 @@
-// Color palette for the admin app - dark premium theme
+// Color palette for the admin app - Cream & Brown Premium Theme
 export const Colors = {
-  // Primary brand colors
-  primary: '#6366F1',       // Indigo 500
-  primaryLight: '#818CF8',  // Indigo 400
-  primaryDark: '#4338CA',   // Indigo 700
+  // Primary brand colors (Browns)
+  primary: '#8B5A2B',       // Rich Brown
+  primaryLight: '#A0522D',  // Sienna
+  primaryDark: '#5C4033',   // Dark Brown
 
-  // Secondary accent
-  secondary: '#06B6D4',     // Cyan 500
-  secondaryLight: '#22D3EE',
-  secondaryDark: '#0891B2',
+  // Secondary accent (Cream/Beige)
+  secondary: '#D2B48C',     // Tan
+  secondaryLight: '#F5DEB3', // Wheat
+  secondaryDark: '#C19A6B', // Camel
 
   // Success / Warning / Error
-  success: '#10B981',       // Emerald 500
+  success: '#10B981',       
   successLight: '#34D399',
   successBg: 'rgba(16, 185, 129, 0.15)',
 
-  warning: '#F59E0B',       // Amber 500
+  warning: '#F59E0B',       
   warningLight: '#FBBF24',
   warningBg: 'rgba(245, 158, 11, 0.15)',
 
-  error: '#EF4444',         // Red 500
+  error: '#EF4444',         
   errorLight: '#F87171',
   errorBg: 'rgba(239, 68, 68, 0.15)',
 
-  info: '#3B82F6',          // Blue 500
+  info: '#3B82F6',          
   infoLight: '#60A5FA',
   infoBg: 'rgba(59, 130, 246, 0.15)',
 
-  // Dark theme backgrounds
-  background: '#0F172A',    // Slate 900
-  surface: '#1E293B',       // Slate 800
-  surfaceLight: '#334155',  // Slate 700
-  surfaceLighter: '#475569', // Slate 600
-  card: '#1E293B',
+  // Light theme backgrounds (Cream/White)
+  background: '#FDFBF7',    // Cream White
+  surface: '#FFFFFF',       // Pure White (Cards, Headers)
+  surfaceLight: '#F5F5DC',  // Beige
+  surfaceLighter: '#FAF0E6', // Linen
+  card: '#FFFFFF',
 
-  // Text colors
-  text: '#F8FAFC',          // Slate 50
-  textSecondary: '#94A3B8', // Slate 400
-  textMuted: '#64748B',     // Slate 500
-  textInverse: '#0F172A',
+  // Text colors (Dark Brown for contrast on light background)
+  text: '#3E2723',          // Very Dark Brown / Almost Black
+  textSecondary: '#5D4037', // Medium Dark Brown
+  textMuted: '#8D6E63',     // Muted Brown
+  textInverse: '#FFFFFF',   // White text on primary buttons
 
   // Border
-  border: '#334155',        // Slate 700
-  borderLight: '#475569',
+  border: '#E7E5E4',        // Stone 200 (Light grayish brown)
+  borderLight: '#F5F5F4',   // Stone 100
 
   // Misc
   white: '#FFFFFF',
   black: '#000000',
   transparent: 'transparent',
-  overlay: 'rgba(0, 0, 0, 0.5)',
+  overlay: 'rgba(62, 39, 35, 0.5)', // Dark brown overlay
 
   // Gradient pairs
-  gradientPrimary: ['#6366F1', '#8B5CF6'] as const,
-  gradientSuccess: ['#10B981', '#06B6D4'] as const,
-  gradientWarning: ['#F59E0B', '#EF4444'] as const,
-  gradientDark: ['#1E293B', '#0F172A'] as const,
+  gradientPrimary: ['#8B5A2B', '#5C4033'] as const,
+  gradientSuccess: ['#10B981', '#059669'] as const,
+  gradientWarning: ['#F59E0B', '#D97706'] as const,
+  gradientDark: ['#FDFBF7', '#F5F5DC'] as const,
 };
 
 export const Shadows = {

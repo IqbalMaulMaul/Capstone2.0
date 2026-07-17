@@ -6,6 +6,7 @@ import { adminService } from '../../services/admin';
 import { PaymentListItem } from '../../types';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PaymentsScreen() {
   const [payments, setPayments] = useState<PaymentListItem[]>([]);
@@ -14,6 +15,7 @@ export default function PaymentsScreen() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const loadData = async (pageNumber = 1, shouldRefresh = false) => {
     try {
@@ -90,8 +92,8 @@ export default function PaymentsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-      <View style={styles.header}>
+      <StatusBar style="dark" />
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -147,7 +149,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    paddingTop: 60,
   },
   backBtn: {
     padding: Spacing.sm,

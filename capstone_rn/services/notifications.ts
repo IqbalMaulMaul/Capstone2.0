@@ -2,14 +2,15 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { authService } from './auth';
+import Constants from 'expo-constants';
 
 // Configure notification handling
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
-    shouldShowInForeground: true,
   }),
 });
 
@@ -52,7 +53,7 @@ export const notificationService = {
     // Get Expo push token
     try {
       const tokenData = await Notifications.getExpoPushTokenAsync({
-        projectId: undefined, // Will use the projectId from app.json
+        projectId: Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId,
       });
       const token = tokenData.data;
 

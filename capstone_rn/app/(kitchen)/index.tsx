@@ -5,7 +5,7 @@ import { Colors, Spacing, BorderRadius, FontSize, Shadows } from '../../constant
 import { kitchenService } from '../../services/kitchen';
 import { KitchenOrder } from '../../types';
 import { StatusBar } from 'expo-status-bar';
-import { KITCHEN_STATUS_ACTIONS, KITCHEN_STATUS_TRANSITIONS, ORDER_STATUS_COLORS, ORDER_STATUS_ICONS, OrderStatusType } from '../../constants/OrderStatus';
+import { KITCHEN_STATUS_ACTIONS, KITCHEN_STATUS_TRANSITIONS, ORDER_STATUS_COLORS, ORDER_STATUS_ICONS, ORDER_STATUS_LABELS, OrderStatusType } from '../../constants/OrderStatus';
 
 export default function KitchenDashboard() {
   const [orders, setOrders] = useState<KitchenOrder[]>([]);
@@ -132,7 +132,7 @@ export default function KitchenDashboard() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={Colors.primary} />

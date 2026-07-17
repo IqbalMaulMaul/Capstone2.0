@@ -141,7 +141,7 @@ class AdminController extends Controller
                 'price' => (float)$menu->price,
                 'formatted_price' => 'Rp' . number_format($menu->price, 0, ',', '.'),
                 'is_available' => $menu->is_available,
-                'image_url' => $menu->image ? asset('storage/' . $menu->image) : null,
+                'image_url' => $menu->image_path ? (Str::startsWith($menu->image_path, 'http') ? $menu->image_path : asset('storage/' . $menu->image_path)) : null,
                 'sort_order' => $menu->sort_order,
             ];
         });
@@ -160,13 +160,17 @@ class AdminController extends Controller
             'price' => 'required|numeric|min:0',
             'is_available' => 'nullable|boolean',
             'image' => 'nullable|image|max:2048',
+            'image_url' => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_available'] = $request->boolean('is_available', true);
         $validated['sort_order'] = Menu::where('category_id', $validated['category_id'])->max('sort_order') + 1;
 
-        if ($request->hasFile('image')) {
+        if ($request->has('image_url')) {
+            $validated['image_path'] = $request->image_url;
+            unset($validated['image_url']);
+        } elseif ($request->hasFile('image')) {
             $path = $request->file('image')->store('menus', 'public');
             $validated['image_path'] = $path;
         }
@@ -186,7 +190,7 @@ class AdminController extends Controller
                 'price' => (float)$menu->price,
                 'formatted_price' => 'Rp' . number_format($menu->price, 0, ',', '.'),
                 'is_available' => $menu->is_available,
-                'image_url' => $menu->image_path ? asset('storage/' . $menu->image_path) : null,
+                'image_url' => $menu->image_path ? (Str::startsWith($menu->image_path, 'http') ? $menu->image_path : asset('storage/' . $menu->image_path)) : null,
             ],
         ], 201);
     }
@@ -200,14 +204,21 @@ class AdminController extends Controller
             'price' => 'required|numeric|min:0',
             'is_available' => 'nullable|boolean',
             'image' => 'nullable|image|max:2048',
+            'image_url' => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_available'] = $request->boolean('is_available', true);
 
-        if ($request->hasFile('image')) {
+        if ($request->has('image_url')) {
+            if ($menu->image_path && !Str::startsWith($menu->image_path, 'http')) {
+                Storage::disk('public')->delete($menu->image_path);
+            }
+            $validated['image_path'] = $request->image_url;
+            unset($validated['image_url']);
+        } elseif ($request->hasFile('image')) {
             // Delete old image
-            if ($menu->image_path) {
+            if ($menu->image_path && !Str::startsWith($menu->image_path, 'http')) {
                 Storage::disk('public')->delete($menu->image_path);
             }
             $path = $request->file('image')->store('menus', 'public');
@@ -229,14 +240,14 @@ class AdminController extends Controller
                 'price' => (float)$menu->price,
                 'formatted_price' => 'Rp' . number_format($menu->price, 0, ',', '.'),
                 'is_available' => $menu->is_available,
-                'image_url' => $menu->image_path ? asset('storage/' . $menu->image_path) : null,
+                'image_url' => $menu->image_path ? (Str::startsWith($menu->image_path, 'http') ? $menu->image_path : asset('storage/' . $menu->image_path)) : null,
             ],
         ]);
     }
 
     public function destroyMenu(Menu $menu)
     {
-        if ($menu->image_path) {
+        if ($menu->image_path && !Str::startsWith($menu->image_path, 'http')) {
             Storage::disk('public')->delete($menu->image_path);
         }
         $menu->delete();
@@ -417,7 +428,7 @@ class AdminController extends Controller
                         'subtotal' => (float)$item->subtotal,
                         'notes' => $item->notes,
                         'image_url' => $item->menu && $item->menu->image_path
-                            ? asset('storage/' . $item->menu->image_path) : null,
+                            ? (Str::startsWith($item->menu->image_path, 'http') ? $item->menu->image_path : asset('storage/' . $item->menu->image_path)) : null,
                     ];
                 }),
                 'payment' => $order->payment ? [

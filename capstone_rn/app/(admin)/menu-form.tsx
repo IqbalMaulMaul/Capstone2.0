@@ -6,11 +6,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Spacing, BorderRadius, FontSize, Shadows } from '../../constants/Colors';
 import { adminService } from '../../services/admin';
 import { Category, MenuFormData } from '../../types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MenuFormScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const isEditing = !!params.id;
+  const insets = useSafeAreaInsets();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -109,7 +111,7 @@ export default function MenuFormScreen() {
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -229,7 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
   },
   backBtn: {
     padding: Spacing.sm,

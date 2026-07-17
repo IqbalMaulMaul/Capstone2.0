@@ -79,6 +79,14 @@ export default function AdminLayout() {
           ),
         }}
       />
+
+      {/* ── Hidden screens (not shown in tab bar) ── */}
+      <Tabs.Screen name="categories" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="payments" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="menu-form" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="room-form" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="room-qr" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="orders/[id]" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

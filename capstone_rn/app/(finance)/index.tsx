@@ -1,13 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Shadows, Spacing, BorderRadius, FontSize } from '../../constants/Colors';
 import { financeService } from '../../services/finance';
 import { FinanceDashboard } from '../../types';
 import { StatusBar } from 'expo-status-bar';
-import { LineChart } from 'react-native-chart-kit';
+
+// ── Custom Bar Chart (pengganti react-native-chart-kit yang crash di RN 0.86) ──
+const SimpleBarChart = ({ labels, values }: { labels: string[]; values: number[] }) => {
+  const max = Math.max(...values, 1);
+  const formatLabel = (v: number) => {
+    if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}jt`;
+    if (v >= 1_000) return `${(v / 1_000).toFixed(0)}rb`;
+    return `${v}`;
+  };
+
+  return (
+    <View style={{ width: '100%' }}>
+      {/* Y-axis labels + bars */}
+      <View style={{ flexDirection: 'row', height: 140, alignItems: 'flex-end' }}>
+        {/* Y label max */}
+        <Text style={{ fontSize: 8, color: Colors.textMuted, marginBottom: 0, width: 32, textAlign: 'right', paddingRight: 4 }}>
+          {formatLabel(max)}
+        </Text>
+        {/* Bars */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', gap: 4 }}>
+          {values.map((val, i) => {
+            const heightPct = max > 0 ? (val / max) : 0;
+            return (
+              <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                <View
+                  style={{
+                    width: '80%',
+                    height: Math.max(heightPct * 120, 4),
+                    backgroundColor: val === max ? Colors.primary : Colors.primaryLight,
+                    borderRadius: 3,
+                    opacity: 0.7 + heightPct * 0.3,
+                  }}
+                />
+              </View>
+            );
+          })}
+        </View>
+      </View>
+      {/* X-axis labels */}
+      <View style={{ flexDirection: 'row', paddingLeft: 36, marginTop: 6 }}>
+        {labels.map((lbl, i) => (
+          <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={{ fontSize: 8, color: Colors.textMuted }}>{lbl}</Text>
+          </View>
+        ))}
+      </View>
+      {/* Nilai tertinggi */}
+      <View style={{ flexDirection: 'row', paddingLeft: 36, marginTop: 4 }}>
+        {values.map((val, i) => (
+          <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+            {val > 0 && (
+              <Text style={{ fontSize: 7, color: Colors.primary, fontWeight: '600' }}>
+                {formatLabel(val)}
+              </Text>
+            )}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 export default function FinanceDashboardScreen() {
+
   const [data, setData] = useState<FinanceDashboard | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -63,7 +124,7 @@ export default function FinanceDashboardScreen() {
       style={styles.container}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
     >
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Revenue Cards */}
       <View style={styles.revenueCards}>
@@ -89,37 +150,7 @@ export default function FinanceDashboardScreen() {
         <Text style={styles.sectionTitle}>Trend Pendapatan (7 Hari Terakhir)</Text>
         <View style={styles.chartCard}>
           {data?.chart && data.chart.labels.length > 0 ? (
-            <LineChart
-              data={{
-                labels: data.chart.labels,
-                datasets: [{ data: data.chart.data }]
-              }}
-              width={Dimensions.get('window').width - Spacing.lg * 2 - Spacing.md * 2} // from react-native
-              height={220}
-              yAxisLabel="Rp "
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: Colors.surface,
-                backgroundGradientFrom: Colors.surface,
-                backgroundGradientTo: Colors.surface,
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(99, 102, 241, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`, // Colors.textSecondary
-                style: {
-                  borderRadius: 16
-                },
-                propsForDots: {
-                  r: "4",
-                  strokeWidth: "2",
-                  stroke: Colors.primary
-                }
-              }}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 16
-              }}
-            />
+            <SimpleBarChart labels={data.chart.labels} values={data.chart.data} />
           ) : (
             <Text style={styles.noDataText}>Belum ada data pendapatan</Text>
           )}

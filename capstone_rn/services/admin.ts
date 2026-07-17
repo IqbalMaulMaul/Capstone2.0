@@ -14,6 +14,33 @@ import {
   PaymentListItem,
 } from '../types';
 
+const IMGBB_API_KEY = '623ce288c1adcb0fbaab13785e4c3928';
+
+async function uploadToImgBB(uri: string, name: string, type: string): Promise<string | null> {
+  if (uri.startsWith('http')) return uri;
+  
+  const formData = new FormData();
+  formData.append('image', {
+    uri,
+    name: name || 'photo.jpg',
+    type: type || 'image/jpeg',
+  } as any);
+
+  try {
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: formData,
+    });
+    const json = await res.json();
+    if (json && json.data && json.data.url) {
+      return json.data.url;
+    }
+  } catch (error) {
+    console.error('ImgBB upload error:', error);
+  }
+  return null;
+}
+
 export const adminService = {
   // ─── Dashboard ─────────────────────────────────────
   async getDashboard(): Promise<DashboardData> {
@@ -56,11 +83,21 @@ export const adminService = {
     formData.append('is_available', data.is_available ? '1' : '0');
 
     if (data.image) {
-      formData.append('image', {
-        uri: data.image.uri,
-        name: data.image.fileName || 'photo.jpg',
-        type: data.image.mimeType || 'image/jpeg',
-      } as any);
+      if (!data.image.uri.startsWith('http')) {
+        const imageUrl = await uploadToImgBB(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
+        if (imageUrl) {
+          formData.append('image_url', imageUrl);
+        } else {
+          // Fallback if ImgBB fails
+          formData.append('image', {
+            uri: data.image.uri,
+            name: data.image.fileName || 'photo.jpg',
+            type: data.image.mimeType || 'image/jpeg',
+          } as any);
+        }
+      } else {
+        formData.append('image_url', data.image.uri);
+      }
     }
 
     const res = await api.post<ApiResponse<Menu>>('/admin/menus', formData, {
@@ -78,11 +115,21 @@ export const adminService = {
     formData.append('is_available', data.is_available ? '1' : '0');
 
     if (data.image) {
-      formData.append('image', {
-        uri: data.image.uri,
-        name: data.image.fileName || 'photo.jpg',
-        type: data.image.mimeType || 'image/jpeg',
-      } as any);
+      if (!data.image.uri.startsWith('http')) {
+        const imageUrl = await uploadToImgBB(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
+        if (imageUrl) {
+          formData.append('image_url', imageUrl);
+        } else {
+          // Fallback if ImgBB fails
+          formData.append('image', {
+            uri: data.image.uri,
+            name: data.image.fileName || 'photo.jpg',
+            type: data.image.mimeType || 'image/jpeg',
+          } as any);
+        }
+      } else {
+        formData.append('image_url', data.image.uri);
+      }
     }
 
     // POST (not PUT) because of file upload

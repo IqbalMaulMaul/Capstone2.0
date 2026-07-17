@@ -5,10 +5,12 @@ import QRCode from 'react-native-qrcode-svg';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Spacing, BorderRadius, FontSize, Shadows } from '../../constants/Colors';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function RoomQRScreen() {
   const { url, room } = useLocalSearchParams();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleShare = async () => {
     try {
@@ -24,8 +26,8 @@ export default function RoomQRScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-      <View style={styles.header}>
+      <StatusBar style="dark" />
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <MaterialIcons name="close" size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -66,7 +68,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.lg,
-    paddingTop: 60,
   },
   backBtn: {
     padding: Spacing.sm,

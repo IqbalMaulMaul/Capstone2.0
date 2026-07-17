@@ -6,12 +6,14 @@ import { adminService } from '../../services/admin';
 import { Category } from '../../types';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CategoriesScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -130,8 +132,8 @@ export default function CategoriesScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-      <View style={styles.header}>
+      <StatusBar style="dark" />
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -226,7 +228,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
   },
   backBtn: {
     padding: Spacing.sm,
