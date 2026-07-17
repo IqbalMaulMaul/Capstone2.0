@@ -172,10 +172,11 @@ class AdminController extends Controller
             unset($validated['image_url']);
         } elseif ($request->hasFile('image')) {
             $imageFile = $request->file('image');
-            $response = \Illuminate\Support\Facades\Http::attach(
-                'source', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
-            )->post('https://freeimage.host/api/1/upload', [
-                'key' => '6d207e02198a847aa98d0a2a901485a5'
+            $base64Image = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $response = \Illuminate\Support\Facades\Http::asForm()->post('https://freeimage.host/api/1/upload', [
+                'key' => '6d207e02198a847aa98d0a2a901485a5',
+                'source' => $base64Image,
+                'format' => 'json'
             ]);
             
             if ($response->successful() && isset($response->json()['image']['url'])) {
@@ -233,10 +234,11 @@ class AdminController extends Controller
             }
             
             $imageFile = $request->file('image');
-            $response = \Illuminate\Support\Facades\Http::attach(
-                'source', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
-            )->post('https://freeimage.host/api/1/upload', [
-                'key' => '6d207e02198a847aa98d0a2a901485a5'
+            $base64Image = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $response = \Illuminate\Support\Facades\Http::asForm()->post('https://freeimage.host/api/1/upload', [
+                'key' => '6d207e02198a847aa98d0a2a901485a5',
+                'source' => $base64Image,
+                'format' => 'json'
             ]);
             
             if ($response->successful() && isset($response->json()['image']['url'])) {
