@@ -175,7 +175,7 @@ class AdminController extends Controller
             $response = \Illuminate\Support\Facades\Http::attach(
                 'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
             )->post('https://api.imgbb.com/1/upload', [
-                'key' => env('IMGBB_API_KEY')
+                'key' => env('IMGBB_API_KEY', '70b73974abbd9988225b9e79b0460bfc')
             ]);
             
             if ($response->successful() && isset($response->json()['data']['url'])) {
@@ -236,7 +236,7 @@ class AdminController extends Controller
             $response = \Illuminate\Support\Facades\Http::attach(
                 'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
             )->post('https://api.imgbb.com/1/upload', [
-                'key' => env('IMGBB_API_KEY')
+                'key' => env('IMGBB_API_KEY', '70b73974abbd9988225b9e79b0460bfc')
             ]);
             
             if ($response->successful() && isset($response->json()['data']['url'])) {
