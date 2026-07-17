@@ -8,6 +8,11 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\KitchenController;
 use App\Http\Controllers\Api\FinanceController;
 
+// Version check
+Route::get('/version', function () {
+    return response()->json(['version' => 'debug-v2']);
+});
+
 // Midtrans Webhook Callback
 Route::post('/midtrans/callback', [PaymentCallbackController::class, 'handle'])->name('midtrans.callback');
 
