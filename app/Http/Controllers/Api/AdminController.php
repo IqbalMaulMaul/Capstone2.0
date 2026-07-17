@@ -173,13 +173,13 @@ class AdminController extends Controller
         } elseif ($request->hasFile('image')) {
             $imageFile = $request->file('image');
             $response = \Illuminate\Support\Facades\Http::attach(
-                'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
-            )->post('https://api.imgbb.com/1/upload', [
-                'key' => env('IMGBB_API_KEY', '70b73974abbd9988225b9e79b0460bfc')
+                'source', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
+            )->post('https://freeimage.host/api/1/upload', [
+                'key' => '6d207e02198a847aa98d0a2a901485a5'
             ]);
             
-            if ($response->successful() && isset($response->json()['data']['url'])) {
-                $validated['image_path'] = $response->json()['data']['url'];
+            if ($response->successful() && isset($response->json()['image']['url'])) {
+                $validated['image_path'] = $response->json()['image']['url'];
             } else {
                 $path = $imageFile->store('menus', 'public');
                 $validated['image_path'] = $path;
@@ -234,13 +234,13 @@ class AdminController extends Controller
             
             $imageFile = $request->file('image');
             $response = \Illuminate\Support\Facades\Http::attach(
-                'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
-            )->post('https://api.imgbb.com/1/upload', [
-                'key' => env('IMGBB_API_KEY', '70b73974abbd9988225b9e79b0460bfc')
+                'source', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
+            )->post('https://freeimage.host/api/1/upload', [
+                'key' => '6d207e02198a847aa98d0a2a901485a5'
             ]);
             
-            if ($response->successful() && isset($response->json()['data']['url'])) {
-                $validated['image_path'] = $response->json()['data']['url'];
+            if ($response->successful() && isset($response->json()['image']['url'])) {
+                $validated['image_path'] = $response->json()['image']['url'];
             } else {
                 $path = $imageFile->store('menus', 'public');
                 $validated['image_path'] = $path;
