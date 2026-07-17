@@ -171,8 +171,19 @@ class AdminController extends Controller
             $validated['image_path'] = $request->image_url;
             unset($validated['image_url']);
         } elseif ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menus', 'public');
-            $validated['image_path'] = $path;
+            $imageFile = $request->file('image');
+            $response = \Illuminate\Support\Facades\Http::attach(
+                'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
+            )->post('https://api.imgbb.com/1/upload', [
+                'key' => env('IMGBB_API_KEY')
+            ]);
+            
+            if ($response->successful() && isset($response->json()['data']['url'])) {
+                $validated['image_path'] = $response->json()['data']['url'];
+            } else {
+                $path = $imageFile->store('menus', 'public');
+                $validated['image_path'] = $path;
+            }
         }
 
         $menu = Menu::create($validated);
@@ -217,12 +228,23 @@ class AdminController extends Controller
             $validated['image_path'] = $request->image_url;
             unset($validated['image_url']);
         } elseif ($request->hasFile('image')) {
-            // Delete old image
             if ($menu->image_path && !Str::startsWith($menu->image_path, 'http')) {
                 Storage::disk('public')->delete($menu->image_path);
             }
-            $path = $request->file('image')->store('menus', 'public');
-            $validated['image_path'] = $path;
+            
+            $imageFile = $request->file('image');
+            $response = \Illuminate\Support\Facades\Http::attach(
+                'image', file_get_contents($imageFile->getRealPath()), $imageFile->getClientOriginalName()
+            )->post('https://api.imgbb.com/1/upload', [
+                'key' => env('IMGBB_API_KEY')
+            ]);
+            
+            if ($response->successful() && isset($response->json()['data']['url'])) {
+                $validated['image_path'] = $response->json()['data']['url'];
+            } else {
+                $path = $imageFile->store('menus', 'public');
+                $validated['image_path'] = $path;
+            }
         }
 
         $menu->update($validated);
