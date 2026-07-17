@@ -244,8 +244,12 @@ class AdminController extends Controller
             if ($response->successful() && isset($response->json()['image']['url'])) {
                 $validated['image_path'] = $response->json()['image']['url'];
             } else {
-                $path = $imageFile->store('menus', 'public');
-                $validated['image_path'] = $path;
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'FreeImageHost upload failed',
+                    'error' => $response->body(),
+                    'status_code' => $response->status()
+                ], 500);
             }
         }
 
