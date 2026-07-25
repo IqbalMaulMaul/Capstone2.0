@@ -14,13 +14,100 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     @PwaHead
     
-    <!-- Fonts -->
+    <!-- Fonts — self-hosted via Google Fonts CSS with display=swap (non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Lucide Icons (lighter than Font Awesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Font Awesome — SUBSET: only icons used in guest views (~3KB vs 90KB+ full CDN) -->
+    <style>
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 900;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2') format('woff2');
+        }
+        .fa-solid, .fas {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+            display: inline-block;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Only the icons used in guest pages */
+        .fa-chevron-left::before { content: "\f053"; }
+        .fa-chevron-right::before { content: "\f054"; }
+        .fa-chevron-down::before { content: "\f078"; }
+        .fa-location-dot::before { content: "\f3c5"; }
+        .fa-bag-shopping::before { content: "\f290"; }
+        .fa-magnifying-glass::before { content: "\f002"; }
+        .fa-utensils::before { content: "\f2e7"; }
+        .fa-plus::before { content: "\2b"; }
+        .fa-minus::before { content: "\f068"; }
+        .fa-cart-plus::before { content: "\f217"; }
+        .fa-spinner::before { content: "\f110"; }
+        .fa-check::before { content: "\f00c"; }
+        .fa-check-circle::before { content: "\f058"; }
+        .fa-check-double::before { content: "\f560"; }
+        .fa-circle-exclamation::before { content: "\f06a"; }
+        .fa-circle-check::before { content: "\f058"; }
+        .fa-circle-info::before { content: "\f05a"; }
+        .fa-circle-notch::before { content: "\f1ce"; }
+        .fa-trash-can::before { content: "\f2ed"; }
+        .fa-receipt::before { content: "\f543"; }
+        .fa-clock::before { content: "\f017"; }
+        .fa-clock-rotate-left::before { content: "\f1da"; }
+        .fa-money-bill-wave::before { content: "\f53a"; }
+        .fa-qrcode::before { content: "\f029"; }
+        .fa-arrow-right::before { content: "\f061"; }
+        .fa-rotate::before { content: "\f2f1"; }
+        .fa-xmark::before { content: "\f00d"; }
+        .fa-times-circle::before { content: "\f057"; }
+        .fa-motorcycle::before { content: "\f21c"; }
+        .fa-bell::before { content: "\f0f3"; }
+        .fa-bell-concierge::before { content: "\f562"; }
+        .fa-fire::before { content: "\f06d"; }
+        .fa-fire-burner::before { content: "\e4f1"; }
+        .fa-pen::before { content: "\f304"; }
+        .fa-lock::before { content: "\f023"; }
+        .fa-wallet::before { content: "\f555"; }
+        .fa-play::before { content: "\f04b"; }
+        .fa-person-walking::before { content: "\f554"; }
+        .fa-walking::before { content: "\f554"; }
+        .fa-flag-checkered::before { content: "\f11e"; }
+        .fa-triangle-exclamation::before { content: "\f071"; }
+        .fa-mug-hot::before { content: "\f7b6"; }
+        .fa-bowl-food::before { content: "\e4c6"; }
+        .fa-ice-cream::before { content: "\f810"; }
+        .fa-wine-glass::before { content: "\f4e3"; }
+        .fa-cookie-bite::before { content: "\f564"; }
+        .fa-drumstick-bite::before { content: "\f6d7"; }
+        .fa-burger::before { content: "\f805"; }
+        .fa-pizza-slice::before { content: "\f818"; }
+        @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fa-spin { animation: fa-spin 2s infinite linear; }
+        .animate-bounce { animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: translateY(0); animation-timing-function: cubic-bezier(0,0,0.2,1); } }
+    </style>
+
+    <!-- Preload critical Vite assets -->
+    @php
+        $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+        $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
+        $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
+    @endphp
+    @if($cssFile)
+    <link rel="preload" href="{{ asset('build/' . $cssFile) }}" as="style">
+    @endif
+    @if($jsFile)
+    <link rel="preload" href="{{ asset('build/' . $jsFile) }}" as="script">
+    @endif
 
     <!-- Vite Styles & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

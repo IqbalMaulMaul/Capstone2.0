@@ -13,7 +13,7 @@ class OrderTrackingController extends Controller
         $room = request()->room; // injected by ValidateRoomToken
         
         $orders = Order::where('room_id', $room->id)
-            ->with(['items'])
+            ->with(['items.menu'])
             ->orderBy('created_at', 'desc')
             ->get();
 

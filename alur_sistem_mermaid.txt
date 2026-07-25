@@ -1,0 +1,111 @@
+﻿====================================
+1. ALUR ROLE OWNER / ADMIN
+====================================
+%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+flowchart TD
+    Start([START]) --> Login[/Input Email & Password/]
+    Login --> CekLogin{Kredensial Valid?}
+    CekLogin -- Tidak --> ErrLogin[/Tampilkan Error/]
+    ErrLogin --> Login
+    CekLogin -- Ya --> DashAdmin[Tampil Dashboard Admin]
+    
+    DashAdmin --> PilihMenu{Pilih Aksi?}
+    
+    PilihMenu -- Kelola Kamar --> Kamar[Tambah/Edit/Hapus Kamar]
+    Kamar --> GenerateQR[Buat QR Code Kamar]
+    GenerateQR --> SimpanDB[(Database)]
+    
+    PilihMenu -- Kelola Kategori --> Kategori[Tambah/Edit/Hapus Kategori]
+    Kategori --> SimpanDB
+    
+    PilihMenu -- Kelola Menu --> Menu[Tambah/Edit/Hapus Menu]
+    Menu --> UploadImg{Upload Gambar?}
+    UploadImg -- Ya --> ImgBB[Kirim ke ImgBB & Dapatkan URL]
+    ImgBB --> SimpanDB
+    UploadImg -- Tidak --> SimpanDB
+    
+    SimpanDB --> Logout[Logout]
+    PilihMenu -- Logout --> Logout
+    Logout --> Stop([STOP])
+
+====================================
+2. ALUR ROLE KITCHEN
+====================================
+%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+flowchart TD
+    Start([START]) --> Login[/Input Email & Password/]
+    Login --> CekLogin{Kredensial Valid?}
+    CekLogin -- Tidak --> ErrLogin[/Tampilkan Error/]
+    ErrLogin --> Login
+    CekLogin -- Ya --> DashKitchen[Tampil Dashboard Kitchen]
+    
+    DashKitchen --> PilihAksi{Pilih Aksi?}
+    
+    PilihAksi -- Kelola Pesanan --> CekNotif{Ada Pesanan Baru?}
+    CekNotif -- Ya --> TerimaPesanan[Terima Pesanan Masuk]
+    TerimaPesanan --> Proses1[Ubah Status: Dimasak]
+    Proses1 --> Proses2[Ubah Status: Diantar]
+    Proses2 --> Proses3[Ubah Status: Selesai]
+    Proses3 --> SimpanDB[(Database)]
+    CekNotif -- Tidak --> Logout[Logout]
+    
+    PilihAksi -- Kelola Menu --> PilihMenu[Ubah Status Tersedia/Habis]
+    PilihMenu --> SimpanDB
+    
+    SimpanDB --> Logout
+    PilihAksi -- Logout --> Logout
+    Logout --> Stop([STOP])
+
+====================================
+3. ALUR ROLE FINANCE
+====================================
+%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+flowchart TD
+    Start([START]) --> Login[/Input Email & Password/]
+    Login --> CekLogin{Kredensial Valid?}
+    CekLogin -- Tidak --> ErrLogin[/Tampilkan Error/]
+    ErrLogin --> Login
+    CekLogin -- Ya --> DashFin[Tampil Dashboard Finance]
+    
+    DashFin --> PilihFitur{Pilih Laporan?}
+    
+    PilihFitur -- Lihat Grafik --> CekGrafik[Tampil Chart Pendapatan]
+    CekGrafik --> Filter{Filter Waktu Harian/Bulanan?}
+    Filter --> UpdateGrafik[Perbarui Data Grafik]
+    UpdateGrafik --> Logout[Logout]
+    
+    PilihFitur -- Riwayat Pembayaran --> ListPay[Tampil Daftar Transaksi]
+    ListPay --> DetailPay[Tampil Detail Pesanan & Pembayaran]
+    DetailPay --> Logout
+    
+    PilihFitur -- Logout --> Logout
+    Logout --> Stop([STOP])
+
+====================================
+4. ALUR ROLE USER / GUEST (WEBSITE)
+====================================
+%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+flowchart TD
+    Start([START]) --> Scan[/Scan QR Code di Kamar/]
+    Scan --> Validasi{URL Kamar Valid?}
+    Validasi -- Tidak --> ErrURL[/Tampilkan Error 404/]
+    ErrURL --> Stop([STOP])
+    
+    Validasi -- Ya --> Web[Tampil Halaman Web Katalog]
+    
+    Web --> Pilih[Pilih Menu Makanan/Minuman]
+    Pilih --> Cart[Masukkan ke Keranjang]
+    
+    Cart --> TambahLagi{Tambah Pesanan Lain?}
+    TambahLagi -- Ya --> Pilih
+    TambahLagi -- Tidak --> Checkout[Klik Checkout]
+    
+    Checkout --> Form[/Isi Catatan & Detail Pembayaran/]
+    Form --> ValidasiPay{Pembayaran Berhasil?}
+    
+    ValidasiPay -- Tidak --> ErrPay[/Notifikasi Gagal Saldo Kurang/]
+    ErrPay --> Form
+    
+    ValidasiPay -- Ya --> Sukses[/Tampilkan Struk & Nomor Antrean/]
+    Sukses --> PushDB[(Notifikasi Pesanan ke Kitchen)]
+    PushDB --> Stop

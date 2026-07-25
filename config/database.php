@@ -94,7 +94,9 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => env('DB_SSLMODE', 'require'),
+            // Supabase pgBouncer compatibility (use port 6543 for pooled connections)
+            'options' => env('DB_OPTIONS', ''),
         ],
 
         'sqlsrv' => [

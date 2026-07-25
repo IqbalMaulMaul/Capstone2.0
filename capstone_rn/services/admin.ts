@@ -14,32 +14,29 @@ import {
   PaymentListItem,
 } from '../types';
 
-const IMGBB_API_KEY = '623ce288c1adcb0fbaab13785e4c3928';
-
-async function uploadToImgBB(uri: string, name: string, type: string): Promise<string | null> {
-  if (uri.startsWith('http')) return uri;
-  
-  const formData = new FormData();
-  formData.append('image', {
-    uri,
-    name: name || 'photo.jpg',
-    type: type || 'image/jpeg',
-  } as any);
-
+const uploadToFreeImageHost = async (uri: string, fileName: string, type: string) => {
   try {
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    const formData = new FormData();
+    formData.append('source', {
+      uri,
+      name: fileName,
+      type,
+    } as any);
+    
+    // Using freeimage.host public API key
+    formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
+    
+    const response = await fetch('https://freeimage.host/api/1/upload', {
       method: 'POST',
       body: formData,
     });
-    const json = await res.json();
-    if (json && json.data && json.data.url) {
-      return json.data.url;
-    }
+    const data = await response.json();
+    return data.image?.url;
   } catch (error) {
-    console.error('ImgBB upload error:', error);
+    console.error('FreeImageHost upload error:', error);
+    return null;
   }
-  return null;
-}
+};
 
 export const adminService = {
   // ─── Dashboard ─────────────────────────────────────
@@ -84,11 +81,11 @@ export const adminService = {
 
     if (data.image) {
       if (!data.image.uri.startsWith('http')) {
-        const imageUrl = await uploadToImgBB(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
+        const imageUrl = await uploadToFreeImageHost(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
         if (imageUrl) {
           formData.append('image_url', imageUrl);
         } else {
-          // Fallback if ImgBB fails
+          // Fallback if FreeImageHost fails
           formData.append('image', {
             uri: data.image.uri,
             name: data.image.fileName || 'photo.jpg',
@@ -116,11 +113,11 @@ export const adminService = {
 
     if (data.image) {
       if (!data.image.uri.startsWith('http')) {
-        const imageUrl = await uploadToImgBB(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
+        const imageUrl = await uploadToFreeImageHost(data.image.uri, data.image.fileName || 'photo.jpg', data.image.mimeType || 'image/jpeg');
         if (imageUrl) {
           formData.append('image_url', imageUrl);
         } else {
-          // Fallback if ImgBB fails
+          // Fallback if FreeImageHost fails
           formData.append('image', {
             uri: data.image.uri,
             name: data.image.fileName || 'photo.jpg',

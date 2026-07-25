@@ -1,0 +1,121 @@
+### Kumpulan Data Flow Diagram (DFD) - Semua dalam Satu Canvas
+
+Copy kode Mermaid di bawah ini seluruhnya ke Mermaid Live Editor. Semua diagram (Level 0 dan Level 1 untuk 4 Role) akan muncul berjejer di dalam kotak-kotak terpisah, sehingga kamu tinggal men-*crop* (potong) gambarnya satu per satu.
+
+```mermaid
+graph LR
+    %% Styling Global
+    classDef entity fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000;
+    classDef process fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000;
+    classDef datastore fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000;
+
+    %% ==========================================
+    %% 1. ADMIN
+    %% ==========================================
+    subgraph "DFD Level 0 (Admin)"
+        AdminL0_Admin["Admin / Pemilik"]:::entity
+        AdminL0_System(("Sistem Hotel Room Service")):::process
+
+        AdminL0_Admin --->|"Input Data Master"| AdminL0_System
+        AdminL0_System --->|"Laporan Penjualan"| AdminL0_Admin
+    end
+
+    subgraph "DFD Level 1 (Admin)"
+        AdminL1_Admin["Admin / Pemilik"]:::entity
+        AdminL1_P1(("1. Kelola Master Data")):::process
+        AdminL1_P5(("5. Pelaporan & Dashboard")):::process
+        
+        AdminL1_D1[("D1: Master Data")]:::datastore
+        AdminL1_D2[("D2: Data Pesanan")]:::datastore
+        AdminL1_D3[("D3: Data Pembayaran")]:::datastore
+
+        AdminL1_Admin --->|"Data Kamar, Kategori, Menu"| AdminL1_P1
+        AdminL1_P1 --->|"Simpan Data"| AdminL1_D1
+        
+        AdminL1_D1 -.->|"Baca Master"| AdminL1_P5
+        AdminL1_D2 -.->|"Baca Pesanan"| AdminL1_P5
+        AdminL1_D3 -.->|"Baca Keuangan"| AdminL1_P5
+        
+        AdminL1_P5 --->|"Laporan Analitik"| AdminL1_Admin
+    end
+
+    %% ==========================================
+    %% 2. GUEST (TAMU)
+    %% ==========================================
+    subgraph "DFD Level 0 (Guest)"
+        GuestL0_Guest["Tamu Hotel"]:::entity
+        GuestL0_System(("Sistem Hotel Room Service")):::process
+
+        GuestL0_Guest --->|"Buat Pesanan & Pembayaran"| GuestL0_System
+        GuestL0_System --->|"Status Pesanan & Tagihan"| GuestL0_Guest
+    end
+
+    subgraph "DFD Level 1 (Guest)"
+        GuestL1_Guest["Tamu Hotel"]:::entity
+        GuestL1_P2(("2. Proses Pemesanan")):::process
+        GuestL1_P4(("4. Proses Pembayaran")):::process
+        
+        GuestL1_D1[("D1: Master Data")]:::datastore
+        GuestL1_D2[("D2: Data Pesanan")]:::datastore
+        GuestL1_D3[("D3: Data Pembayaran")]:::datastore
+
+        GuestL1_Guest --->|"Pilih Menu & Pesan"| GuestL1_P2
+        GuestL1_P2 --->|"Simpan Pesanan"| GuestL1_D2
+        GuestL1_D1 -.->|"Daftar Menu Tersedia"| GuestL1_P2
+        
+        GuestL1_Guest --->|"Bayar Tagihan"| GuestL1_P4
+        GuestL1_D2 -.->|"Cek Total Tagihan"| GuestL1_P4
+        GuestL1_P4 --->|"Simpan Transaksi"| GuestL1_D3
+        
+        GuestL1_P2 --->|"Notifikasi Pesanan"| GuestL1_Guest
+        GuestL1_P4 --->|"Struk / Invoice"| GuestL1_Guest
+    end
+
+    %% ==========================================
+    %% 3. KITCHEN (DAPUR)
+    %% ==========================================
+    subgraph "DFD Level 0 (Kitchen)"
+        KitchenL0_Kitchen["Staf Dapur"]:::entity
+        KitchenL0_System(("Sistem Hotel Room Service")):::process
+
+        KitchenL0_System --->|"Daftar Pesanan Baru"| KitchenL0_Kitchen
+        KitchenL0_Kitchen --->|"Update Status Masakan"| KitchenL0_System
+    end
+
+    subgraph "DFD Level 1 (Kitchen)"
+        KitchenL1_Kitchen["Staf Dapur"]:::entity
+        KitchenL1_P3(("3. Kelola Dapur")):::process
+        KitchenL1_D2[("D2: Data Pesanan")]:::datastore
+
+        KitchenL1_D2 -.->|"Baca Pesanan Baru"| KitchenL1_P3
+        KitchenL1_P3 --->|"Info Daftar Pesanan"| KitchenL1_Kitchen
+        KitchenL1_Kitchen --->|"Ubah Status Pesanan"| KitchenL1_P3
+        KitchenL1_P3 --->|"Update Status Pesanan"| KitchenL1_D2
+    end
+
+    %% ==========================================
+    %% 4. FINANCE (KEUANGAN)
+    %% ==========================================
+    subgraph "DFD Level 0 (Finance)"
+        FinanceL0_Finance["Staf Keuangan"]:::entity
+        FinanceL0_System(("Sistem Hotel Room Service")):::process
+
+        FinanceL0_System --->|"Data Transaksi"| FinanceL0_Finance
+        FinanceL0_Finance --->|"Monitoring Laporan"| FinanceL0_System
+    end
+
+    subgraph "DFD Level 1 (Finance)"
+        FinanceL1_Finance["Staf Keuangan"]:::entity
+        FinanceL1_P5(("5. Pelaporan & Dashboard")):::process
+        
+        FinanceL1_D1[("D1: Master Data")]:::datastore
+        FinanceL1_D2[("D2: Data Pesanan")]:::datastore
+        FinanceL1_D3[("D3: Data Pembayaran")]:::datastore
+
+        FinanceL1_D1 -.->|"Data Master"| FinanceL1_P5
+        FinanceL1_D2 -.->|"Data Penjualan"| FinanceL1_P5
+        FinanceL1_D3 -.->|"Data Pendapatan"| FinanceL1_P5
+        
+        FinanceL1_P5 --->|"Laporan Keuangan"| FinanceL1_Finance
+    end
+```

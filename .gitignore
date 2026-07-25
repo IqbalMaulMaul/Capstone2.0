@@ -22,3 +22,6 @@ yarn-error.log
 /.zed
 
 /mysql-8
+
+.vercel
+.env*

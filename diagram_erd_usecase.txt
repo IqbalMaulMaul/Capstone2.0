@@ -1,0 +1,119 @@
+﻿====================================
+1. USE CASE DIAGRAM
+====================================
+    %%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+    flowchart LR
+        %% ACTORS (Menggunakan bentuk kotak membulat)
+        Admin([" Owner / Admin"])
+        Kitchen([" Kitchen"])
+        Finance([" Finance"])
+        Guest([" Tamu (Guest)"])
+        
+        %% SYSTEM BOUNDARY
+        subgraph Sistem Hotel Room Service
+            %% USE CASES (Menggunakan bentuk Oval/Lingkaran)
+            UC1((Kelola Kategori & Menu))
+            UC2((Kelola Kamar & Generate QR))
+            UC3((Lihat Seluruh Pesanan & Transaksi))
+            
+            UC4((Terima & Update Status Pesanan))
+            UC5((Ubah Ketersediaan Menu))
+            
+            UC6((Lihat Grafik Pendapatan))
+            UC7((Evaluasi Riwayat Transaksi))
+            
+            UC8((Scan QR & Lihat Katalog))
+            UC9((Pilih Menu & Buat Pesanan))
+            UC10((Lakukan Pembayaran))
+        end
+        
+        %% MENGHUBUNGKAN ACTOR DENGAN USE CASE
+        Admin --- UC1
+        Admin --- UC2
+        Admin --- UC3
+        
+        Kitchen --- UC4
+        Kitchen --- UC5
+        
+        Finance --- UC6
+        Finance --- UC7
+        
+        Guest --- UC8
+        Guest --- UC9
+        Guest --- UC10
+
+====================================
+2. ENTITY RELATIONSHIP DIAGRAM (ERD)
+====================================
+erDiagram
+    %% RELATIONSHIPS
+    CATEGORIES ||--o{ MENUS : "memiliki (has)"
+    ROOMS ||--o{ ORDERS : "melayani (serves)"
+    ORDERS ||--|{ ORDER_ITEMS : "berisi (contains)"
+    MENUS ||--o{ ORDER_ITEMS : "termasuk di (included in)"
+    ORDERS ||--o| PAYMENTS : "memiliki (has)"
+    USERS ||--o{ ORDERS : "membuat (opsional)"
+
+    %% TABLES & COLUMNS
+    USERS {
+        bigint id PK
+        string name
+        string email
+        string password
+        string role "enum: owner, kitchen, finance"
+        datetime created_at
+    }
+    
+    CATEGORIES {
+        bigint id PK
+        string name
+        string description
+        datetime created_at
+    }
+    
+    MENUS {
+        bigint id PK
+        bigint category_id FK
+        string name
+        string slug
+        decimal price
+        string image_path
+        boolean is_available
+        datetime created_at
+    }
+    
+    ROOMS {
+        bigint id PK
+        string room_number
+        integer capacity
+        string qr_code
+        datetime created_at
+    }
+    
+    ORDERS {
+        bigint id PK
+        bigint room_id FK
+        bigint user_id FK "Nullable"
+        string status "pending, cooking, ready, delivered, completed"
+        decimal total_amount
+        datetime created_at
+    }
+    
+    ORDER_ITEMS {
+        bigint id PK
+        bigint order_id FK
+        bigint menu_id FK
+        integer quantity
+        decimal price
+        decimal subtotal
+        string notes
+    }
+    
+    PAYMENTS {
+        bigint id PK
+        bigint order_id FK
+        string payment_method
+        string payment_status "pending, success, failed"
+        decimal amount
+        datetime paid_at
+    }

@@ -16,7 +16,7 @@ class MenuController extends Controller
 
         $categories = Category::active()->ordered()->get();
         
-        $menusQuery = Menu::available()->ordered();
+        $menusQuery = Menu::with('category')->available()->ordered();
 
         if ($search) {
             $menusQuery->search($search);
