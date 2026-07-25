@@ -98,9 +98,16 @@
 
     <!-- Preload critical Vite assets -->
     @php
-        $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
-        $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
-        $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
+        $cssFile = null;
+        $jsFile = null;
+        $manifestPath = public_path('build/manifest.json');
+        if (file_exists($manifestPath)) {
+            $manifest = json_decode(file_get_contents($manifestPath), true);
+            if (is_array($manifest)) {
+                $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
+                $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
+            }
+        }
     @endphp
     @if($cssFile)
     <link rel="preload" href="{{ asset('build/' . $cssFile) }}" as="style">
